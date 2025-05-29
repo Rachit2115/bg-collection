@@ -329,22 +329,26 @@ export const categories = [
   {
     id: "photo-frames",
     name: "Photo Frames",
-    image: "/placeholder.svg?height=400&width=300",
+    image: "/images/categories/photo-frame-bg.jpg",
+    link: "/products?category=photo-frames",
   },
   {
     id: "wall-clocks",
     name: "Wall Clocks",
-    image: "/placeholder.svg?height=400&width=300",
+    image: "/images/categories/wall-clock-bg.jpg",
+    link: "/products?category=wall-clocks",
   },
   {
     id: "home-decor",
     name: "Home Decor",
-    image: "/placeholder.svg?height=400&width=300",
+    image: "/images/categories/home-decor-bg.jpg",
+    link: "/products?category=home-decor",
   },
   {
     id: "gift-items",
     name: "Gift Items",
-    image: "/placeholder.svg?height=400&width=300",
+    image: "/images/categories/gift-items-bg.jpg",
+    link: "/products?category=gift-items",
   },
 ]
 

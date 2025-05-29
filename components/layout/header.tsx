@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, ReactNode } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
@@ -37,7 +37,7 @@ export function Header() {
   const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0)
 
   // Format price in Indian Rupees
-  const formatPrice = (price) => {
+  const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
@@ -46,7 +46,7 @@ export function Header() {
   }
 
   // Check if a link is active
-  const isLinkActive = (path) => {
+  const isLinkActive = (path: string) => {
     if (path === "/" && pathname === "/") return true
     if (path !== "/" && pathname.startsWith(path)) return true
     return false
@@ -136,34 +136,45 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className={`text-sm font-medium transition-colors hover:text-primary keyboard-focus ${
+                  className={`text-sm font-medium transition-colors hover:text-foreground keyboard-focus ${
                     isLinkActive("/products") ? "text-primary font-semibold" : "text-foreground/70"
-                  } p-0 h-auto hover-glow`}
+                  } p-0 h-auto`}
                 >
                   <span className="flex items-center">
                     Shop <ChevronDown className="h-4 w-4 ml-1" />
                   </span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-48 bg-card/95 backdrop-blur-md">
-                <DropdownMenuItem asChild>
-                  <Link href="/products" className="w-full cursor-pointer keyboard-focus hover:bg-primary/10">
-                    All Products
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                {categories.map((category) => (
-                  <DropdownMenuItem key={category.id} asChild>
-                    <Link
-                      href={`/products?category=${category.id}`}
-                      className={`w-full cursor-pointer keyboard-focus hover:bg-primary/10 ${
-                        pathname.includes(`category=${category.id}`) ? "text-primary font-semibold" : ""
-                      }`}
-                    >
-                      {category.name}
+              <DropdownMenuContent align="center" className="w-48 bg-card/95 backdrop-blur-md relative overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                  <Image
+                    src="/images/shop2.jpg"
+                    alt="Shop Background"
+                    fill
+                    className="object-cover opacity-20"
+                    priority
+                  />
+                </div>
+                <div className="relative z-10 bg-background/50 backdrop-blur-sm">
+                  <DropdownMenuItem asChild>
+                    <Link href="/products" className="w-full cursor-pointer keyboard-focus hover:bg-primary/10">
+                      All Products
                     </Link>
                   </DropdownMenuItem>
-                ))}
+                  <DropdownMenuSeparator />
+                  {categories.map((category) => (
+                    <DropdownMenuItem key={category.id} asChild>
+                      <Link
+                        href={`/products?category=${category.id}`}
+                        className={`w-full cursor-pointer keyboard-focus hover:bg-primary/10 ${
+                          pathname.includes(`category=${category.id}`) ? "text-primary font-semibold" : ""
+                        }`}
+                      >
+                        {category.name}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -653,7 +664,7 @@ export function Header() {
 }
 
 // Custom NavLink component with animations
-function NavLink({ href, isActive, children }) {
+function NavLink({ href, isActive, children }: { href: string; isActive: boolean; children: ReactNode }) {
   return (
     <Link
       href={href}

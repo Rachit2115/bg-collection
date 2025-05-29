@@ -10,7 +10,25 @@ import { Star } from "@/components/ui/star"
 
 export function ProductFilters({ activeFilters, onFilterChange, onClose }) {
   const colors = ["Black", "White", "Gray", "Blue", "Red", "Green", "Brown", "Beige", "Navy", "Burgundy"]
-  const sizes = ["XS", "S", "M", "L", "XL", "XXL"]
+  const sizes = [
+    "4x6",
+    "5x7",
+    "8x10",
+    "10 inch",
+    "12 inch",
+    "16 inch",
+    "18 inch",
+    "20 inch",
+    "24 inch",
+    "Small",
+    "Medium",
+    "Large",
+    "Standard",
+    "Set of 3",
+    "Set of 5",
+    "12x16 (holds 5 photos)",
+    "16x20 (holds 8 photos)"
+  ]
   const priceRanges = [
     { label: "Under ₹1,000", value: "0-1000" },
     { label: "₹1,000 - ₹2,000", value: "1000-2000" },

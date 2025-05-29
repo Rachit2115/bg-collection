@@ -151,9 +151,9 @@ export default function HomePage() {
                   <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                     <Button
                       variant="outline"
-                      className="text-white border-white hover:bg-white hover:text-black btn-ripple"
+                      className="text-black dark:text-white border-white hover:bg-white hover:text-black dark:hover:bg-white dark:hover:text-black btn-ripple"
                     >
-                      <Link href={`/products?category=${category.id}`}>Explore</Link>
+                      <Link href={category.link}>Explore</Link>
                     </Button>
                   </motion.div>
                 </div>
@@ -234,10 +234,11 @@ export default function HomePage() {
               className="relative h-[500px] rounded-lg overflow-hidden fade-in-right"
             >
               <Image
-                src="/placeholder.svg?height=1000&width=800"
+                src="/images/shop.jpg"
                 alt="BG Collection Story"
                 fill
                 className="object-cover"
+                priority
               />
 
               {/* Decorative elements */}

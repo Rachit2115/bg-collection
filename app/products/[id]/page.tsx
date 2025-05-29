@@ -15,6 +15,7 @@ import { useCart } from "@/components/cart/cart-provider"
 import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { products } from "@/lib/data"
+import { ReviewForm } from "@/components/products/review-form"
 
 // Sample reviews data
 const sampleReviews = [
@@ -151,6 +152,20 @@ export default function ProductPage() {
       title: "Thank you for your feedback",
       description: "You marked this review as helpful",
     })
+  }
+
+  const handleReviewSubmitted = (reviewData: { rating: number; name: string; title: string; content: string }) => {
+    const newReview = {
+      id: reviews.length + 1,
+      name: reviewData.name,
+      date: "Just now",
+      rating: reviewData.rating,
+      title: reviewData.title,
+      content: reviewData.content,
+      helpful: 0,
+      verified: true,
+    }
+    setReviews([newReview, ...reviews])
   }
 
   // Format price in Indian Rupees
@@ -545,7 +560,11 @@ export default function ProductPage() {
                       </div>
                     ))}
                   </div>
-                  <Button className="mt-6 keyboard-focus">Write a Review</Button>
+                  <ReviewForm
+                    productId={product.id}
+                    productName={product.name}
+                    onReviewSubmitted={handleReviewSubmitted}
+                  />
                 </div>
                 <div className="bg-muted/30 p-6 rounded-lg">
                   <h3 className="text-xl font-semibold mb-4">Review Breakdown</h3>

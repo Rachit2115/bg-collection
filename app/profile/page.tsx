@@ -8,7 +8,7 @@ import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { CreditCard, Heart, LogOut, Package, Settings, ShoppingBag, User, Upload, Camera, X } from "lucide-react"
+import { CreditCard, Heart, LogOut, Package, Settings, ShoppingBag, User, Upload, Camera, X, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,6 +20,15 @@ import { ProductCard } from "@/components/products/product-card"
 import { products } from "@/lib/data"
 import { toast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+
+interface PaymentMethod {
+  id: string
+  type: "card" | "paypal" | "apple"
+  last4?: string
+  expiry?: string
+  isDefault?: boolean
+}
 
 export default function ProfilePage() {
   const { user, logout } = useAuth()
@@ -35,6 +44,23 @@ export default function ProfilePage() {
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showPhotoDialog, setShowPhotoDialog] = useState(false)
+  const [showAddPayment, setShowAddPayment] = useState(false)
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
+    {
+      id: "pm_1",
+      type: "card",
+      last4: "4242",
+      expiry: "12/25",
+      isDefault: true,
+    },
+  ])
+  const [newPaymentMethod, setNewPaymentMethod] = useState({
+    type: "card",
+    cardName: "",
+    cardNumber: "",
+    expiry: "",
+    cvc: "",
+  })
 
   // Sample data
   const orders = [
@@ -126,6 +152,43 @@ export default function ProfilePage() {
       user.name?.charAt(0).toUpperCase() ||
       "U"
     )
+  }
+
+  const handleAddPaymentMethod = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Simulate API call
+    setTimeout(() => {
+      const newMethod: PaymentMethod = {
+        id: `pm_${Date.now()}`,
+        type: newPaymentMethod.type,
+        last4: newPaymentMethod.cardNumber.slice(-4),
+        expiry: newPaymentMethod.expiry,
+      }
+      
+      setPaymentMethods([...paymentMethods, newMethod])
+      setShowAddPayment(false)
+      setNewPaymentMethod({
+        type: "card",
+        cardName: "",
+        cardNumber: "",
+        expiry: "",
+        cvc: "",
+      })
+      
+      toast({
+        title: "Payment Method Added",
+        description: "Your new payment method has been added successfully.",
+      })
+    }, 1000)
+  }
+
+  const handleRemovePaymentMethod = (id: string) => {
+    setPaymentMethods(paymentMethods.filter(method => method.id !== id))
+    toast({
+      title: "Payment Method Removed",
+      description: "The payment method has been removed from your account.",
+    })
   }
 
   if (!user) {
@@ -393,23 +456,39 @@ export default function ProfilePage() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 border rounded-lg">
-                          <div className="flex items-center gap-4">
-                            <div className="bg-muted w-12 h-8 rounded flex items-center justify-center">
-                              <CreditCard className="h-5 w-5" />
+                        {paymentMethods.map((method) => (
+                          <div key={method.id} className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className="flex items-center gap-4">
+                              <div className="bg-muted w-12 h-8 rounded flex items-center justify-center">
+                                <CreditCard className="h-5 w-5" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium">
+                                  {method.type === "card" ? `Card ending in ${method.last4}` : method.type === "paypal" ? "PayPal" : "Apple Pay"}
+                                </h4>
+                                {method.expiry && <p className="text-sm text-muted-foreground">Expires {method.expiry}</p>}
+                              </div>
                             </div>
-                            <div>
-                              <h4 className="font-medium">Visa ending in 4242</h4>
-                              <p className="text-sm text-muted-foreground">Expires 12/25</p>
+                            <div className="flex items-center gap-2">
+                              {method.isDefault && (
+                                <Badge variant="secondary">Default</Badge>
+                              )}
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => handleRemovePaymentMethod(method.id)}
+                              >
+                                Remove
+                              </Button>
                             </div>
                           </div>
-                          <Button variant="ghost" size="sm">
-                            Remove
-                          </Button>
-                        </div>
+                        ))}
                       </div>
 
-                      <Button className="mt-6 relative overflow-hidden group">
+                      <Button 
+                        className="mt-6 relative overflow-hidden group"
+                        onClick={() => setShowAddPayment(true)}
+                      >
                         <span className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/30 to-primary/0 group-hover:translate-x-full transition-transform duration-700 ease-in-out -z-10"></span>
                         Add Payment Method
                       </Button>
@@ -715,6 +794,128 @@ export default function ProfilePage() {
 
             <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Payment Method Dialog */}
+      <Dialog open={showAddPayment} onOpenChange={setShowAddPayment}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Payment Method</DialogTitle>
+            <DialogDescription>
+              Add a new payment method to your account for faster checkout.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleAddPaymentMethod} className="space-y-6">
+            <Tabs
+              defaultValue="card"
+              value={newPaymentMethod.type}
+              onValueChange={(value) => setNewPaymentMethod(prev => ({ ...prev, type: value as "card" | "paypal" | "apple" }))}
+            >
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="card">Credit Card</TabsTrigger>
+                <TabsTrigger value="paypal">PayPal</TabsTrigger>
+                <TabsTrigger value="apple">Apple Pay</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="card" className="space-y-6 pt-6">
+                <div className="space-y-2">
+                  <Label htmlFor="cardName">Name on Card</Label>
+                  <Input
+                    id="cardName"
+                    value={newPaymentMethod.cardName}
+                    onChange={(e) => setNewPaymentMethod(prev => ({ ...prev, cardName: e.target.value }))}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cardNumber">Card Number</Label>
+                  <Input
+                    id="cardNumber"
+                    value={newPaymentMethod.cardNumber}
+                    onChange={(e) => setNewPaymentMethod(prev => ({ ...prev, cardNumber: e.target.value }))}
+                    placeholder="1234 5678 9012 3456"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="expiry">Expiry Date</Label>
+                    <Input
+                      id="expiry"
+                      value={newPaymentMethod.expiry}
+                      onChange={(e) => setNewPaymentMethod(prev => ({ ...prev, expiry: e.target.value }))}
+                      placeholder="MM/YY"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cvc">CVC</Label>
+                    <Input
+                      id="cvc"
+                      value={newPaymentMethod.cvc}
+                      onChange={(e) => setNewPaymentMethod(prev => ({ ...prev, cvc: e.target.value }))}
+                      placeholder="123"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2 pt-2">
+                  <ShieldCheck className="h-5 w-5 text-green-600" />
+                  <span className="text-sm text-muted-foreground">
+                    Your payment information is secure and encrypted
+                  </span>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="paypal" className="pt-6">
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-6">
+                    You will be redirected to PayPal to complete your payment method setup.
+                  </p>
+                  <Image
+                    src="/placeholder.svg?height=60&width=200"
+                    alt="PayPal"
+                    width={200}
+                    height={60}
+                    className="mx-auto"
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="apple" className="pt-6">
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-6">
+                    You will be redirected to Apple Pay to complete your payment method setup.
+                  </p>
+                  <Image
+                    src="/placeholder.svg?height=60&width=200"
+                    alt="Apple Pay"
+                    width={200}
+                    height={60}
+                    className="mx-auto"
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            <div className="flex justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowAddPayment(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">
+                Add Payment Method
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
