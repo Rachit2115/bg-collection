@@ -1,0 +1,534 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode - soft peach, coral, electric violet */
+    --background: 30 100% 97%; /* Soft peach background */
+    --foreground: 0 0% 12%; /* Rich contrast text */
+    --card: 30 100% 99%;
+    --card-foreground: 0 0% 12%;
+    --popover: 30 100% 99%;
+    --popover-foreground: 0 0% 12%;
+    --primary: 16 100% 66%; /* Coral */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 270 100% 60%; /* Electric violet */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 30 20% 92%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 270 100% 60%; /* Electric violet */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 30 20% 88%;
+    --input: 30 20% 88%;
+    --ring: 16 100% 66%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Dark mode - deep black, neon cyan, watermelon pink */
+    --background: 0 0% 5%; /* Deep black */
+    --foreground: 0 0% 95%; /* Rich contrast text */
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 180 100% 60%; /* Neon cyan */
+    --primary-foreground: 0 0% 5%;
+    --secondary: 350 100% 68%; /* Watermelon pink */
+    --secondary-foreground: 0 0% 5%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 350 100% 68%; /* Watermelon pink */
+    --accent-foreground: 0 0% 5%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 180 100% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-poppins font-semibold;
+  }
+  p,
+  span,
+  div,
+  a,
+  button,
+  input {
+    @apply font-inter;
+  }
+}
+
+/* Custom font variables */
+:root {
+  --font-inter: var(--font-inter), system-ui, sans-serif;
+  --font-poppins: var(--font-poppins), system-ui, sans-serif;
+}
+
+/* Font classes */
+.font-inter {
+  font-family: var(--font-inter);
+}
+
+.font-poppins {
+  font-family: var(--font-poppins);
+}
+
+/* Custom styles for the glassmorphism effect */
+.bg-glass {
+  @apply bg-background/80 backdrop-blur-md border;
+}
+
+/* Loading screen animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px 0 rgba(var(--primary-rgb), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px rgba(var(--primary-rgb), 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px 0 rgba(var(--primary-rgb), 0.5);
+  }
+}
+
+.loading-screen {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.loading-logo {
+  animation: scaleUp 0.8s ease-in-out, float 6s ease-in-out infinite;
+}
+
+.loading-spinner {
+  border-top-color: hsl(var(--primary));
+  animation: spin 1s linear infinite;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, hsl(var(--secondary)) 25%, hsl(var(--muted)) 37%, hsl(var(--secondary)) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Interactive effects */
+.hover-scale {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.hover-glow {
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 15px hsl(var(--primary) / 0.5);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Button effects */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.btn-ripple:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+/* Scroll animations */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in-left {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-in-right {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Parallax effect */
+.parallax {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120%;
+  background-size: cover;
+  background-position: center;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Cart animation */
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+
+.cart-bounce {
+  animation: bounce 0.8s ease;
+}
+
+/* Accessibility improvements */
+:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Improved keyboard navigation */
+.keyboard-focus:focus-visible {
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary));
+  outline: none;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Transition improvements */
+.page-transition {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Add RGB variables for glow effects */
+:root {
+  --primary-rgb: 255, 111, 97; /* Coral in RGB */
+}
+
+.dark {
+  --primary-rgb: 0, 255, 255; /* Neon cyan in RGB */
+}
+
+/* Enhanced loading animations */
+@keyframes elegantFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-20px) rotate(-2deg);
+  }
+}
+
+@keyframes elegantPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes sparkleRotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.elegant-float {
+  animation: elegantFloat 4s ease-in-out infinite;
+}
+
+.elegant-pulse {
+  animation: elegantPulse 2s ease-in-out infinite;
+}
+
+.gradient-shift {
+  background: linear-gradient(
+    -45deg,
+    hsl(var(--primary)),
+    hsl(var(--secondary)),
+    hsl(var(--primary)),
+    hsl(var(--secondary))
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 3s ease infinite;
+}
+
+.sparkle-rotate {
+  animation: sparkleRotate 3s ease-in-out infinite;
+}
+
+/* Enhanced cart bounce animation */
+@keyframes cartBounceEnhanced {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  10% {
+    transform: translateY(-8px) scale(1.1);
+  }
+  40% {
+    transform: translateY(-15px) scale(1.05);
+  }
+  60% {
+    transform: translateY(-10px) scale(1.02);
+  }
+}
+
+.cart-bounce-enhanced {
+  animation: cartBounceEnhanced 1s ease;
+}
+
+/* Smooth page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Enhanced button ripple effect */
+.btn-ripple-enhanced {
+  position: relative;
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+.btn-ripple-enhanced::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-ripple-enhanced:active::before {
+  width: 300px;
+  height: 300px;
+}
