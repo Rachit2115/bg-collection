@@ -8,10 +8,10 @@ import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { CreditCard, Heart, LogOut, Package, Settings, ShoppingBag, User, Upload, Camera, X, ShieldCheck } from "lucide-react"
+import { CreditCard, Heart, LogOut, Package, Settings, ShoppingBag, User, Upload, Camera, X, ShieldCheck, Truck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -19,8 +19,9 @@ import { useAuth } from "@/components/auth/auth-provider"
 import { ProductCard } from "@/components/products/product-card"
 import { products } from "@/lib/data"
 import { toast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { useRouter } from "next/navigation"
 
 interface PaymentMethod {
   id: string
@@ -30,8 +31,165 @@ interface PaymentMethod {
   isDefault?: boolean
 }
 
+interface OrderItem {
+  id: string
+  name: string
+  price: number
+  quantity: number
+  image: string
+  selectedColor?: string
+  selectedSize?: string
+}
+
+interface Order {
+  id: string
+  date: string
+  status: "processing" | "shipped" | "delivered"
+  items: OrderItem[]
+  total: number
+  shippingAddress: string
+  trackingNumber: string | null
+  customerName: string
+  email: string
+  phone: string
+  shippingMethod: string
+  paymentMethod: string
+  subtotal: number
+  shipping: number
+  tax: number
+}
+
+const statusConfig = {
+  processing: {
+    label: "Processing",
+    icon: Package,
+    color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  },
+  shipped: {
+    label: "Shipped",
+    icon: Truck,
+    color: "bg-blue-100 text-blue-800 border-blue-200",
+  },
+  delivered: {
+    label: "Delivered",
+    icon: Package,
+    color: "bg-green-100 text-green-800 border-green-200",
+  },
+}
+
+function OrderDetailsDialog({ 
+  order, 
+  isOpen, 
+  onClose 
+}: { 
+  order: Order
+  isOpen: boolean
+  onClose: () => void 
+}) {
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(price)
+  }
+
+  const StatusIcon = statusConfig[order.status].icon
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>Order Details #{order.id}</DialogTitle>
+          <DialogDescription>
+            Placed on {order.date}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-medium">Order Status</h3>
+              <Badge variant="outline" className={statusConfig[order.status].color}>
+                <StatusIcon className="h-3 w-3 mr-1" />
+                {statusConfig[order.status].label}
+              </Badge>
+            </div>
+            {order.trackingNumber && (
+              <div>
+                <h3 className="font-medium">Tracking Number</h3>
+                <p className="text-sm">{order.trackingNumber}</p>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <h3 className="font-medium mb-2">Items</h3>
+            <div className="space-y-4">
+              {order.items.map((item) => (
+                <div key={item.id} className="flex gap-4 p-4 border rounded-lg">
+                  <div className="relative h-24 w-24 rounded-md overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-medium">{item.name}</h4>
+                    {item.selectedColor && item.selectedSize && (
+                      <p className="text-sm text-muted-foreground">
+                        Color: {item.selectedColor} / Size: {item.selectedSize}
+                      </p>
+                    )}
+                    <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                    <p className="text-sm font-medium">{formatPrice(item.price)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <h3 className="font-medium mb-2">Shipping Address</h3>
+              <p className="text-sm">{order.shippingAddress}</p>
+            </div>
+            <div>
+              <h3 className="font-medium mb-2">Order Summary</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal</span>
+                  <span>{formatPrice(order.subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Shipping</span>
+                  <span>{order.shipping === 0 ? "Free" : formatPrice(order.shipping)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Tax</span>
+                  <span>{formatPrice(order.tax)}</span>
+                </div>
+                <div className="border-t pt-2 flex justify-between font-medium">
+                  <span>Total</span>
+                  <span>{formatPrice(order.total)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// Define motion components
+const MotionDiv = motion.div
+const MotionCard = motion(Card)
+
 export default function ProfilePage() {
   const { user, logout } = useAuth()
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState("orders")
   const [isEditing, setIsEditing] = useState(false)
   const [profileData, setProfileData] = useState({
@@ -61,25 +219,11 @@ export default function ProfilePage() {
     expiry: "",
     cvc: "",
   })
+  const [orders, setOrders] = useState<Order[]>([])
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [showOrderDetails, setShowOrderDetails] = useState(false)
 
   // Sample data
-  const orders = [
-    {
-      id: "ORD-12345",
-      date: "May 8, 2023",
-      status: "Delivered",
-      total: 249.95,
-      items: [products[0], products[2]],
-    },
-    {
-      id: "ORD-12344",
-      date: "April 15, 2023",
-      status: "Processing",
-      total: 129.99,
-      items: [products[1]],
-    },
-  ]
-
   const wishlist = [products[3], products[4], products[5]]
 
   const recentlyViewed = [products[6], products[7], products[8], products[9]]
@@ -95,6 +239,14 @@ export default function ProfilePage() {
     }
   }, [user])
 
+  useEffect(() => {
+    // Load orders from localStorage
+    const storedOrders = localStorage.getItem("orders")
+    if (storedOrders) {
+      setOrders(JSON.parse(storedOrders))
+    }
+  }, [])
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setProfileData((prev) => ({
@@ -104,8 +256,48 @@ export default function ProfilePage() {
   }
 
   const handleSaveChanges = () => {
+    // Validate required fields
+    if (!profileData.firstName.trim() || !profileData.lastName.trim() || !profileData.email.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(profileData.email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validate phone number if provided
+    if (profileData.phone && !/^\+?[\d\s-]{10,}$/.test(profileData.phone)) {
+      toast({
+        title: "Invalid Phone Number",
+        description: "Please enter a valid phone number.",
+        variant: "destructive",
+      })
+      return
+    }
+
     // Simulate API call
     setTimeout(() => {
+      // Update user data
+      if (user) {
+        user.firstName = profileData.firstName
+        user.lastName = profileData.lastName
+        user.email = profileData.email
+        user.phone = profileData.phone
+        user.name = `${profileData.firstName} ${profileData.lastName}`
+      }
+
       toast({
         title: "Profile Updated",
         description: "Your profile information has been updated successfully.",
@@ -191,6 +383,15 @@ export default function ProfilePage() {
     })
   }
 
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrder(order)
+    setShowOrderDetails(true)
+  }
+
+  const handleTrackOrder = (orderId: string) => {
+    router.push(`/track-order?order=${orderId}`)
+  }
+
   if (!user) {
     return (
       <div className="container mx-auto py-20 text-center">
@@ -210,7 +411,7 @@ export default function ProfilePage() {
     <div className="container mx-auto py-12">
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
-        <motion.div
+        <MotionDiv
           className="w-full md:w-64"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -289,12 +490,12 @@ export default function ProfilePage() {
               </nav>
             </CardContent>
           </Card>
-        </motion.div>
+        </MotionDiv>
 
         {/* Main Content */}
         <div className="flex-1">
           <AnimatePresence mode="wait">
-            <motion.div
+            <MotionDiv
               key={activeTab}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -318,12 +519,12 @@ export default function ProfilePage() {
                     </Card>
                   ) : (
                     <div className="space-y-6">
-                      {orders.map((order) => (
-                        <motion.div
+                      {orders.map((order, index) => (
+                        <MotionDiv
                           key={order.id}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
                         >
                           <Card className="border-primary/10 hover:border-primary/30 transition-all duration-300">
                             <CardHeader className="pb-3">
@@ -332,8 +533,11 @@ export default function ProfilePage() {
                                   <CardTitle className="text-lg">Order #{order.id}</CardTitle>
                                   <CardDescription>Placed on {order.date}</CardDescription>
                                 </div>
-                                <Badge variant={order.status === "Delivered" ? "outline" : "default"}>
-                                  {order.status}
+                                <Badge variant="outline" className={statusConfig[order.status].color}>
+                                  {statusConfig[order.status].icon && (
+                                    <statusConfig[order.status].icon className="h-3 w-3 mr-1" />
+                                  )}
+                                  {statusConfig[order.status].label}
                                 </Badge>
                               </div>
                             </CardHeader>
@@ -343,7 +547,7 @@ export default function ProfilePage() {
                                   <div key={item.id} className="flex gap-4">
                                     <div className="w-16 h-16 relative rounded-md overflow-hidden flex-shrink-0">
                                       <Image
-                                        src={item.images[0] || "/placeholder.svg"}
+                                        src={item.image}
                                         alt={item.name}
                                         fill
                                         className="object-cover"
@@ -365,16 +569,16 @@ export default function ProfilePage() {
                               </div>
 
                               <div className="mt-4 flex gap-3">
-                                <Button variant="outline" size="sm" asChild>
-                                  <Link href={`/orders/${order.id}`}>View Details</Link>
+                                <Button variant="outline" size="sm" onClick={() => handleViewDetails(order)}>
+                                  View Details
                                 </Button>
-                                <Button variant="outline" size="sm">
+                                <Button variant="outline" size="sm" onClick={() => handleTrackOrder(order.id)}>
                                   Track Order
                                 </Button>
                               </div>
                             </CardContent>
                           </Card>
-                        </motion.div>
+                        </MotionDiv>
                       ))}
                     </div>
                   )}
@@ -399,14 +603,11 @@ export default function ProfilePage() {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       {wishlist.map((product) => (
-                        <motion.div
+                        <div
                           key={product.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: 0.1 * wishlist.indexOf(product) }}
                         >
                           <ProductCard key={product.id} product={product} wishlistView />
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -431,14 +632,11 @@ export default function ProfilePage() {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                       {recentlyViewed.map((product) => (
-                        <motion.div
+                        <div
                           key={product.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: 0.05 * recentlyViewed.indexOf(product) }}
                         >
                           <ProductCard key={product.id} product={product} />
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -757,7 +955,7 @@ export default function ProfilePage() {
                   </Tabs>
                 </div>
               )}
-            </motion.div>
+            </MotionDiv>
           </AnimatePresence>
         </div>
       </div>
@@ -918,6 +1116,14 @@ export default function ProfilePage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {selectedOrder && (
+        <OrderDetailsDialog
+          order={selectedOrder}
+          isOpen={showOrderDetails}
+          onClose={() => setShowOrderDetails(false)}
+        />
+      )}
     </div>
   )
 }

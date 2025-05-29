@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
-import { CheckCircle, Package, Printer, ShoppingBag } from "lucide-react"
+import { CheckCircle, Package, Printer, ShoppingBag, Truck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
@@ -159,6 +159,12 @@ export default function OrderConfirmationPage() {
               <Link href="/products">
                 <ShoppingBag className="mr-2 h-4 w-4" />
                 Continue Shopping
+              </Link>
+            </Button>
+            <Button variant="outline" asChild size="lg">
+              <Link href={`/track-order?order=${orderData.id}`}>
+                <Truck className="mr-2 h-4 w-4" />
+                Track Order
               </Link>
             </Button>
             <Button variant="outline" asChild size="lg">

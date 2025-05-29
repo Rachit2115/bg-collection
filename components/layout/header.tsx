@@ -4,7 +4,7 @@ import { useState, useEffect, ReactNode } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Heart, Menu, Search, ShoppingBag, User, X, ChevronDown, LogOut, Sparkles } from "lucide-react"
+import { Heart, Menu, Search, ShoppingBag, User, X, ChevronDown, LogOut, Sparkles, Package, Truck, CheckCircle2, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -23,6 +23,7 @@ import { useCart } from "@/components/cart/cart-provider"
 import { useAuth } from "@/components/auth/auth-provider"
 import { categories } from "@/lib/data"
 import Image from "next/image"
+import { SearchSuggestions } from "@/components/search/search-suggestions"
 
 export function Header() {
   const pathname = usePathname()
@@ -178,6 +179,10 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            <NavLink href="/track-order" isActive={isLinkActive("/track-order")}>
+              Track Order
+            </NavLink>
+
             <NavLink href="/about" isActive={isLinkActive("/about")}>
               About
             </NavLink>
@@ -299,27 +304,9 @@ export function Header() {
             className="border-t overflow-hidden bg-card/80 backdrop-blur-md"
           >
             <div className="container mx-auto py-4">
-              <form action="/search" method="get" className="relative max-w-2xl mx-auto">
-                <Input
-                  type="search"
-                  name="q"
-                  placeholder="Search for products, categories, or keywords..."
-                  className="h-12 pl-12 pr-12 keyboard-focus rounded-full border-primary/20 focus:border-primary"
-                  autoFocus
-                  aria-label="Search products"
-                />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-primary" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 keyboard-focus hover-glow"
-                  onClick={() => setIsSearchOpen(false)}
-                  aria-label="Close search"
-                >
-                  <X className="h-4 w-4 text-primary" />
-                </Button>
-              </form>
+              <div className="relative max-w-2xl mx-auto">
+                <SearchSuggestions isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+              </div>
             </div>
           </motion.div>
         )}
@@ -401,6 +388,18 @@ export function Header() {
                     </Link>
                   </li>
                 ))}
+
+                <li>
+                  <Link
+                    href="/track-order"
+                    className={`flex items-center py-2 px-3 rounded-md hover:bg-primary/10 keyboard-focus ${
+                      isLinkActive("/track-order") ? "text-primary font-semibold" : ""
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Track Order
+                  </Link>
+                </li>
 
                 <li>
                   <Link

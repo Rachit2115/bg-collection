@@ -7,29 +7,35 @@ export async function processOrder(formData: FormData) {
   try {
     // Extract order data from form
     const orderData = {
-      orderId: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
+      id: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
       date: new Date().toLocaleDateString("en-IN", {
         year: "numeric",
         month: "long",
         day: "numeric",
       }),
+      status: "processing" as const,
+      items: JSON.parse(formData.get("items") as string).map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.images[0] || "/placeholder.svg",
+      })),
+      total: Number.parseFloat(formData.get("total") as string),
+      shippingAddress: `${formData.get("address")}, ${formData.get("city")}, ${formData.get("state")}, ${formData.get("zip")}, ${formData.get("country")}`,
+      trackingNumber: null,
       customerName: formData.get("firstName") + " " + formData.get("lastName"),
       email: formData.get("email") as string,
       phone: formData.get("phone") as string,
-      address: `${formData.get("address")}, ${formData.get("city")}, ${formData.get("state")}, ${formData.get("zip")}, ${formData.get("country")}`,
       shippingMethod: formData.get("shippingMethod") || "standard",
       paymentMethod: formData.get("paymentMethod") || "card",
-      items: JSON.parse(formData.get("items") as string),
       subtotal: Number.parseFloat(formData.get("subtotal") as string),
       shipping: Number.parseFloat(formData.get("shipping") as string),
       tax: Number.parseFloat(formData.get("tax") as string),
-      total: Number.parseFloat(formData.get("total") as string),
     }
 
     // Send order confirmation via Web3Forms
     await sendOrderNotification(orderData)
-
-    // In a real app, you would save the order to a database here
 
     // Return success response with order data
     return {

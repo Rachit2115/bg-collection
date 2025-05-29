@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Package, Truck, CheckCircle2, Clock, LucideIcon, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -44,7 +44,7 @@ type StatusConfig = {
 }
 
 // Sample orders data
-const sampleOrders: Order[] = [
+const initialOrders: Order[] = [
   {
     id: "ORD001",
     date: "2024-03-15",
@@ -326,7 +326,33 @@ function OrderCard({ order }: { order: Order }) {
 }
 
 export default function OrdersPage() {
-  const [orders] = useState<Order[]>(sampleOrders)
+  const [orders, setOrders] = useState<Order[]>([])
+
+  useEffect(() => {
+    // Load orders from localStorage
+    const storedOrders = localStorage.getItem("orders")
+    if (storedOrders) {
+      setOrders(JSON.parse(storedOrders))
+    } else {
+      // If no orders in localStorage, use initial orders
+      setOrders(initialOrders)
+      localStorage.setItem("orders", JSON.stringify(initialOrders))
+    }
+
+    // Check for new order in localStorage
+    const lastOrder = localStorage.getItem("lastOrder")
+    if (lastOrder) {
+      const newOrder = JSON.parse(lastOrder)
+      // Add the new order to the beginning of the orders list
+      setOrders((prevOrders) => {
+        const updatedOrders = [newOrder, ...prevOrders]
+        localStorage.setItem("orders", JSON.stringify(updatedOrders))
+        return updatedOrders
+      })
+      // Clear the lastOrder from localStorage
+      localStorage.removeItem("lastOrder")
+    }
+  }, [])
 
   return (
     <div className="container mx-auto py-12">
