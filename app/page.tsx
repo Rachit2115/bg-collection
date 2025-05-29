@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, useScroll, useTransform, useAnimation } from "framer-motion"
@@ -9,6 +9,25 @@ import { Button } from "@/components/ui/button"
 import { ProductCard } from "@/components/products/product-card"
 import { NewsletterForm } from "@/components/marketing/newsletter-form"
 import { featuredProducts, categories } from "@/lib/data"
+
+interface FloatingElement {
+  top: string
+  left: string
+  y: [number, number]
+  x: [number, number]
+  duration: number
+}
+
+interface DecorativeElement {
+  width: number
+  height: number
+  left: string
+  top: string
+  y: [number, number]
+  x: [number, number]
+  opacity: [number, number, number]
+  duration: number
+}
 
 export default function HomePage() {
   const ref = useRef(null)
@@ -22,11 +41,13 @@ export default function HomePage() {
 
   // For scroll animations
   const controls = useAnimation()
+  const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([])
+  const [decorativeElements, setDecorativeElements] = useState<DecorativeElement[]>([])
 
   // Set up intersection observer for animations
   useEffect(() => {
     // Get all elements with animation classes
-    const elements = document.querySelectorAll(".fade-in-up, .fade-in-left, .fade-in-right")
+    const animatedElements = document.querySelectorAll(".fade-in-up, .fade-in-left, .fade-in-right")
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -40,13 +61,37 @@ export default function HomePage() {
     )
 
     // Observe all elements
-    elements.forEach((element) => {
+    animatedElements.forEach((element) => {
       observer.observe(element)
     })
 
+    // Generate floating elements positions
+    const floatingElementsData = [...Array(5)].map((_, i) => ({
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      y: [Math.random() * 50, Math.random() * -50],
+      x: [Math.random() * 50, Math.random() * -50],
+      duration: Math.random() * 10 + 10,
+    }))
+
+    // Generate decorative elements for newsletter section
+    const decorativeElementsData = [...Array(20)].map((_, i) => ({
+      width: Math.random() * 100 + 20,
+      height: Math.random() * 100 + 20,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      y: [Math.random() * 100, Math.random() * -100],
+      x: [Math.random() * 100, Math.random() * -100],
+      opacity: [0.1, 0.3, 0.1],
+      duration: Math.random() * 10 + 10,
+    }))
+
+    setFloatingElements(floatingElementsData)
+    setDecorativeElements(decorativeElementsData)
+
     // Cleanup function
     return () => {
-      elements.forEach((element) => {
+      animatedElements.forEach((element) => {
         observer.unobserve(element)
       })
     }
@@ -93,21 +138,21 @@ export default function HomePage() {
 
           {/* Floating elements */}
           <div className="absolute inset-0 pointer-events-none">
-            {[...Array(5)].map((_, i) => (
+            {floatingElements.map((element, i) => (
               <motion.div
                 key={i}
                 className="absolute"
                 style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
+                  top: element.top,
+                  left: element.left,
                 }}
                 animate={{
-                  y: [Math.random() * 50, Math.random() * -50],
-                  x: [Math.random() * 50, Math.random() * -50],
+                  y: element.y,
+                  x: element.x,
                   rotate: [0, 360],
                 }}
                 transition={{
-                  duration: Math.random() * 10 + 10,
+                  duration: element.duration,
                   repeat: Number.POSITIVE_INFINITY,
                   ease: "easeInOut",
                 }}
@@ -270,23 +315,23 @@ export default function HomePage() {
       <section className="py-20 bg-gradient-to-r from-primary to-secondary text-white relative overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute inset-0 -z-10">
-          {[...Array(20)].map((_, i) => (
+          {decorativeElements.map((element, i) => (
             <motion.div
               key={i}
               className="absolute rounded-full bg-white/10"
               style={{
-                width: Math.random() * 100 + 20,
-                height: Math.random() * 100 + 20,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
+                width: element.width,
+                height: element.height,
+                left: element.left,
+                top: element.top,
               }}
               animate={{
-                y: [Math.random() * 100, Math.random() * -100],
-                x: [Math.random() * 100, Math.random() * -100],
-                opacity: [0.1, 0.3, 0.1],
+                y: element.y,
+                x: element.x,
+                opacity: element.opacity,
               }}
               transition={{
-                duration: Math.random() * 10 + 10,
+                duration: element.duration,
                 repeat: Number.POSITIVE_INFINITY,
                 ease: "easeInOut",
               }}

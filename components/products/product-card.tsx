@@ -8,10 +8,12 @@ import { Heart, ShoppingBag, Star, Trash2, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/components/cart/cart-provider"
+import { useWishlist } from "@/components/wishlist/wishlist-provider"
 import { useToast } from "@/components/ui/use-toast"
 
 export function ProductCard({ product, wishlistView = false, onRemoveFromWishlist }) {
   const { addToCart } = useCart()
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
   const { toast } = useToast()
   const [isHovered, setIsHovered] = useState(false)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
@@ -35,6 +37,27 @@ export function ProductCard({ product, wishlistView = false, onRemoveFromWishlis
 
       setIsAddingToCart(false)
     }, 600)
+  }
+
+  const handleWishlistToggle = () => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id)
+      toast({
+        title: "Removed from wishlist",
+        description: `${product.name} has been removed from your wishlist.`,
+      })
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        images: product.images,
+      })
+      toast({
+        title: "Added to wishlist",
+        description: `${product.name} has been added to your wishlist.`,
+      })
+    }
   }
 
   // Format price in Indian Rupees
@@ -146,9 +169,10 @@ export function ProductCard({ product, wishlistView = false, onRemoveFromWishlis
                       variant="secondary"
                       size="icon"
                       className="h-10 w-10 rounded-full shadow-lg keyboard-focus"
-                      aria-label={`Add ${product.name} to wishlist`}
+                      onClick={handleWishlistToggle}
+                      aria-label={`${isInWishlist(product.id) ? "Remove" : "Add"} ${product.name} to wishlist`}
                     >
-                      <Heart className="h-5 w-5" />
+                      <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? "fill-red-500 text-red-500" : ""}`} />
                     </Button>
                   )}
                 </motion.div>

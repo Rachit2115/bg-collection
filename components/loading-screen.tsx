@@ -4,10 +4,45 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { ShoppingBag, Sparkles } from "lucide-react"
 
+interface CircleStyle {
+  width: number
+  height: number
+  left: string
+  top: string
+}
+
+interface DotStyle {
+  width: number
+  height: number
+  left: string
+  top: string
+}
+
 export function LoadingScreen() {
   const [isLoading, setIsLoading] = useState(true)
+  const [circleStyles, setCircleStyles] = useState<CircleStyle[]>([])
+  const [dotStyles, setDotStyles] = useState<DotStyle[]>([])
 
   useEffect(() => {
+    // Generate random styles for circles
+    const circles = [...Array(5)].map(() => ({
+      width: Math.random() * 300 + 100,
+      height: Math.random() * 300 + 100,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+    }))
+
+    // Generate random styles for dots
+    const dots = [...Array(30)].map(() => ({
+      width: Math.random() * 6 + 2,
+      height: Math.random() * 6 + 2,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+    }))
+
+    setCircleStyles(circles)
+    setDotStyles(dots)
+
     // Simulate loading time
     const timer = setTimeout(() => {
       setIsLoading(false)
@@ -29,50 +64,40 @@ export function LoadingScreen() {
         {/* Elegant animated background */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
           {/* Animated circles */}
-          {[...Array(5)].map((_, i) => (
+          {circleStyles.map((style, i) => (
             <motion.div
               key={`circle-${i}`}
               className="absolute rounded-full border border-primary/20"
-              style={{
-                width: Math.random() * 300 + 100,
-                height: Math.random() * 300 + 100,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
+              style={style}
               animate={{
                 scale: [0, 1, 0],
                 opacity: [0, 0.2, 0],
               }}
               transition={{
-                duration: Math.random() * 5 + 5,
+                duration: 5 + i,
                 repeat: Number.POSITIVE_INFINITY,
                 ease: "easeInOut",
-                delay: Math.random() * 2,
+                delay: i * 0.5,
               }}
             />
           ))}
 
           {/* Animated dots */}
-          {[...Array(30)].map((_, i) => (
+          {dotStyles.map((style, i) => (
             <motion.div
               key={`dot-${i}`}
               className="absolute rounded-full bg-secondary/30 dark:bg-secondary/20"
-              style={{
-                width: Math.random() * 6 + 2,
-                height: Math.random() * 6 + 2,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
+              style={style}
               animate={{
-                y: [Math.random() * 100, Math.random() * -100],
-                x: [Math.random() * 100, Math.random() * -100],
+                y: [100, -100],
+                x: [100, -100],
                 opacity: [0, 1, 0],
               }}
               transition={{
-                duration: Math.random() * 10 + 10,
+                duration: 10 + i,
                 repeat: Number.POSITIVE_INFINITY,
                 ease: "easeInOut",
-                delay: Math.random() * 2,
+                delay: i * 0.2,
               }}
             />
           ))}

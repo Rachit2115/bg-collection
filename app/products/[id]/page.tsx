@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProductCard } from "@/components/products/product-card"
 import { ImageGallery } from "@/components/products/image-gallery"
 import { useCart } from "@/components/cart/cart-provider"
+import { useWishlist } from "@/components/wishlist/wishlist-provider"
 import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { products } from "@/lib/data"
@@ -70,6 +71,7 @@ export default function ProductPage() {
   const router = useRouter()
   const { toast } = useToast()
   const { addToCart } = useCart()
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
 
   const product = products.find((p) => p.id === params.id)
 
@@ -137,10 +139,24 @@ export default function ProductPage() {
   }
 
   const handleAddToWishlist = () => {
-    toast({
-      title: "Added to wishlist",
-      description: `${product.name} has been added to your wishlist.`,
-    })
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id)
+      toast({
+        title: "Removed from wishlist",
+        description: `${product.name} has been removed from your wishlist.`,
+      })
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        images: product.images,
+      })
+      toast({
+        title: "Added to wishlist",
+        description: `${product.name} has been added to your wishlist.`,
+      })
+    }
   }
 
   const incrementQuantity = () => setQuantity((prev) => prev + 1)
@@ -446,10 +462,10 @@ export default function ProductPage() {
                 size="lg"
                 className="flex-1 keyboard-focus"
                 onClick={handleAddToWishlist}
-                aria-label={`Add ${product.name} to wishlist`}
+                aria-label={`${isInWishlist(product.id) ? "Remove" : "Add"} ${product.name} to wishlist`}
               >
-                <Heart className="mr-2 h-4 w-4" />
-                Add to Wishlist
+                <Heart className={`mr-2 h-4 w-4 ${isInWishlist(product.id) ? "fill-red-500 text-red-500" : ""}`} />
+                {isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
               </Button>
             </div>
 

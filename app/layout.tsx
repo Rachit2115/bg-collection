@@ -3,6 +3,7 @@ import { Inter, Poppins } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { CartProvider } from "@/components/cart/cart-provider"
 import { AuthProvider } from "@/components/auth/auth-provider"
+import { WishlistProvider } from "@/components/wishlist/wishlist-provider"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Toaster } from "@/components/ui/toaster"
@@ -41,13 +42,15 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <AuthProvider>
             <CartProvider>
-              <LoadingScreen />
-              <div className="relative flex min-h-screen flex-col">
-                <Header />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-              <Toaster />
+              <WishlistProvider>
+                <LoadingScreen />
+                <div className="relative flex min-h-screen flex-col">
+                  <Header />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+                <Toaster />
+              </WishlistProvider>
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>

@@ -179,10 +179,6 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <NavLink href="/track-order" isActive={isLinkActive("/track-order")}>
-              Track Order
-            </NavLink>
-
             <NavLink href="/about" isActive={isLinkActive("/about")}>
               About
             </NavLink>
@@ -314,117 +310,82 @@ export function Header() {
 
       {/* Mobile Menu */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetContent side="left" className="w-[300px] sm:w-[350px] bg-card/95 backdrop-blur-md">
+        <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0">
           <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between py-4 border-b">
-              <motion.div
-                className="flex items-center"
-                animate={{ x: [0, 5, -5, 0] }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-              >
-                <span className="text-xl font-poppins font-bold mr-1">BG</span>
-                <Sparkles className="h-5 w-5 text-secondary" />
-                <span className="text-xl font-poppins font-bold ml-1">Collection</span>
-              </motion.div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="keyboard-focus hover-glow"
-                aria-label="Close menu"
-              >
-                <X className="h-5 w-5 text-primary" />
-              </Button>
-            </div>
-
-            <div className="py-4">
-              <form action="/search" method="get" className="relative">
-                <Input
-                  type="search"
-                  name="q"
-                  placeholder="Search..."
-                  className="h-10 pl-10 keyboard-focus rounded-full border-primary/20 focus:border-primary"
-                  aria-label="Search products"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
-              </form>
-            </div>
-
-            <nav className="flex-1 py-4">
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/"
-                    className={`flex items-center py-2 px-3 rounded-md hover:bg-primary/10 keyboard-focus ${
-                      isLinkActive("/") ? "text-primary font-semibold" : ""
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
+            <div className="p-4 border-b">
+              <div className="flex items-center justify-between">
+                <Link href="/" className="flex items-center keyboard-focus group" onClick={() => setIsMobileMenuOpen(false)}>
+                  <motion.div
+                    className="flex items-center"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/products"
-                    className={`flex items-center py-2 px-3 rounded-md hover:bg-primary/10 keyboard-focus ${
-                      pathname === "/products" ? "text-primary font-semibold" : ""
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    All Products
-                  </Link>
-                </li>
-
-                {categories.map((category) => (
-                  <li key={category.id}>
-                    <Link
-                      href={`/products?category=${category.id}`}
-                      className={`flex items-center py-2 px-3 rounded-md hover:bg-primary/10 keyboard-focus ${
-                        pathname.includes(`category=${category.id}`) ? "text-primary font-semibold" : ""
-                      }`}
-                      onClick={() => setIsMobileMenuOpen(false)}
+                    <span className="text-xl font-poppins font-bold mr-1">BG</span>
+                    <motion.span
+                      className="relative"
+                      animate={{ rotate: [0, 5, -5, 0] }}
+                      transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
                     >
-                      {category.name}
-                    </Link>
-                  </li>
-                ))}
+                      <Sparkles className="h-5 w-5 text-secondary" />
+                    </motion.span>
+                    <span className="text-xl font-poppins font-bold ml-1">Collection</span>
+                  </motion.div>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="keyboard-focus hover-glow"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-label="Close menu"
+                >
+                  <X className="h-6 w-6 text-primary" />
+                </Button>
+              </div>
+            </div>
 
-                <li>
-                  <Link
-                    href="/track-order"
-                    className={`flex items-center py-2 px-3 rounded-md hover:bg-primary/10 keyboard-focus ${
-                      isLinkActive("/track-order") ? "text-primary font-semibold" : ""
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Track Order
-                  </Link>
-                </li>
+            <div className="flex-1 overflow-y-auto">
+              <nav className="flex flex-col p-4">
+                <Link
+                  href="/"
+                  className={`flex items-center px-4 py-2 text-sm font-medium rounded-md keyboard-focus hover:bg-primary/10 ${
+                    isLinkActive("/") ? "text-primary font-semibold" : ""
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Home
+                </Link>
 
-                <li>
-                  <Link
-                    href="/about"
-                    className={`flex items-center py-2 px-3 rounded-md hover:bg-primary/10 keyboard-focus ${
-                      isLinkActive("/about") ? "text-primary font-semibold" : ""
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/contact"
-                    className={`flex items-center py-2 px-3 rounded-md hover:bg-primary/10 keyboard-focus ${
-                      isLinkActive("/contact") ? "text-primary font-semibold" : ""
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </nav>
+                <Link
+                  href="/products"
+                  className={`flex items-center px-4 py-2 text-sm font-medium rounded-md keyboard-focus hover:bg-primary/10 ${
+                    isLinkActive("/products") ? "text-primary font-semibold" : ""
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Shop
+                </Link>
+
+                <Link
+                  href="/about"
+                  className={`flex items-center px-4 py-2 text-sm font-medium rounded-md keyboard-focus hover:bg-primary/10 ${
+                    isLinkActive("/about") ? "text-primary font-semibold" : ""
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  About
+                </Link>
+
+                <Link
+                  href="/contact"
+                  className={`flex items-center px-4 py-2 text-sm font-medium rounded-md keyboard-focus hover:bg-primary/10 ${
+                    isLinkActive("/contact") ? "text-primary font-semibold" : ""
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Contact
+                </Link>
+              </nav>
+            </div>
 
             <div className="py-4 border-t">
               {user ? (

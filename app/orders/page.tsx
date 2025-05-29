@@ -16,6 +16,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 import { ReviewForm } from "@/components/products/review-form"
+import Image from "next/image"
 
 interface OrderItem {
   id: string
@@ -55,7 +56,7 @@ const initialOrders: Order[] = [
         name: "Elegant Photo Frame",
         price: 1499,
         quantity: 1,
-        image: "/images/elegant-frame.jpg",
+        image: "/images/elegant-framme.jpg",
       },
     ],
     total: 1499,
@@ -133,7 +134,13 @@ function OrderDetailsDialog({
     }).format(price)
   }
 
-  const StatusIcon = statusConfig[order.status].icon
+  // Get status config with fallback
+  const status = statusConfig[order.status] || {
+    label: "Unknown",
+    icon: Package,
+    color: "bg-gray-100 text-gray-800 border-gray-200",
+  }
+  const StatusIcon = status.icon
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -149,9 +156,9 @@ function OrderDetailsDialog({
           <div className="flex justify-between items-start">
             <div>
               <h3 className="font-medium">Order Status</h3>
-              <Badge variant="outline" className={statusConfig[order.status].color}>
+              <Badge variant="outline" className={status.color}>
                 <StatusIcon className="h-3 w-3 mr-1" />
-                {statusConfig[order.status].label}
+                {status.label}
               </Badge>
             </div>
             {order.trackingNumber && (
@@ -166,12 +173,18 @@ function OrderDetailsDialog({
             <h3 className="font-medium mb-2">Items</h3>
             <div className="space-y-4">
               {order.items.map((item) => (
-                <div key={item.id} className="flex gap-4 p-4 border rounded-lg">
-                  <div className="relative h-24 w-24 rounded-md overflow-hidden">
-                    <img
+                <div key={`${order.id}-${item.id}`} className="flex gap-4 p-4 border rounded-lg">
+                  <div className="relative h-24 w-24 rounded-md overflow-hidden bg-muted">
+                    <Image
                       src={item.image}
                       alt={item.name}
-                      className="object-cover w-full h-full"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.svg";
+                      }}
                     />
                   </div>
                   <div className="flex-1">
@@ -226,7 +239,13 @@ function OrderCard({ order }: { order: Order }) {
     }).format(price)
   }
 
-  const StatusIcon = statusConfig[order.status].icon
+  // Get status config with fallback
+  const status = statusConfig[order.status] || {
+    label: "Unknown",
+    icon: Package,
+    color: "bg-gray-100 text-gray-800 border-gray-200",
+  }
+  const StatusIcon = status.icon
 
   const handleReviewSubmitted = (reviewData: { rating: number; name: string; title: string; content: string }) => {
     // Here you would typically send the review to your backend
@@ -246,20 +265,26 @@ function OrderCard({ order }: { order: Order }) {
             <h3 className="font-medium">Order #{order.id}</h3>
             <p className="text-sm text-muted-foreground">Placed on {order.date}</p>
           </div>
-          <Badge variant="outline" className={statusConfig[order.status].color}>
+          <Badge variant="outline" className={status.color}>
             <StatusIcon className="h-3 w-3 mr-1" />
-            {statusConfig[order.status].label}
+            {status.label}
           </Badge>
         </div>
 
         <div className="space-y-4">
           {order.items.map((item) => (
-            <div key={item.id} className="flex gap-4">
-              <div className="relative h-20 w-20 rounded-md overflow-hidden">
-                <img
+            <div key={`${order.id}-${item.id}`} className="flex gap-4">
+              <div className="relative h-20 w-20 rounded-md overflow-hidden bg-muted">
+                <Image
                   src={item.image}
                   alt={item.name}
-                  className="object-cover w-full h-full"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/placeholder.svg";
+                  }}
                 />
               </div>
               <div className="flex-1">
@@ -368,7 +393,7 @@ export default function OrdersPage() {
 
         <TabsContent value="all" className="space-y-6">
           {orders.map((order) => (
-            <OrderCard key={order.id} order={order} />
+            <OrderCard key={`order-${order.id}`} order={order} />
           ))}
         </TabsContent>
 
@@ -376,7 +401,7 @@ export default function OrdersPage() {
           {orders
             .filter((order) => order.status === "processing")
             .map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <OrderCard key={`processing-${order.id}`} order={order} />
             ))}
         </TabsContent>
 
@@ -384,7 +409,7 @@ export default function OrdersPage() {
           {orders
             .filter((order) => order.status === "shipped")
             .map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <OrderCard key={`shipped-${order.id}`} order={order} />
             ))}
         </TabsContent>
 
@@ -392,7 +417,7 @@ export default function OrdersPage() {
           {orders
             .filter((order) => order.status === "delivered")
             .map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <OrderCard key={`delivered-${order.id}`} order={order} />
             ))}
         </TabsContent>
       </Tabs>
