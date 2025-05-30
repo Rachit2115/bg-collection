@@ -1,13 +1,14 @@
 "use client"
 
-import type React from "react"
+import * as React from "react"
+import { motion } from "framer-motion"
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
+import { AnimatePresence } from "framer-motion"
 import { CreditCard, Heart, LogOut, Package, Settings, ShoppingBag, User, Upload, Camera, X, ShieldCheck, Truck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -59,7 +60,11 @@ interface Order {
   tax: number
 }
 
-const statusConfig = {
+const statusConfig: Record<Order['status'], {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+}> = {
   processing: {
     label: "Processing",
     icon: Package,
@@ -94,7 +99,7 @@ function OrderDetailsDialog({
     }).format(price)
   }
 
-  const StatusIcon = statusConfig[order.status].icon
+  const StatusIcon = statusConfig[order.status || 'processing'].icon
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -110,9 +115,9 @@ function OrderDetailsDialog({
           <div className="flex justify-between items-start">
             <div>
               <h3 className="font-medium">Order Status</h3>
-              <Badge variant="outline" className={statusConfig[order.status].color}>
-                <StatusIcon className="h-3 w-3 mr-1" />
-                {statusConfig[order.status].label}
+              <Badge variant="outline" className={statusConfig[order.status || 'processing'].color}>
+                {React.createElement(statusConfig[order.status || 'processing'].icon, { className: "h-3 w-3 mr-1" })}
+                {statusConfig[order.status || 'processing'].label}
               </Badge>
             </div>
             {order.trackingNumber && (
@@ -129,9 +134,11 @@ function OrderDetailsDialog({
               {order.items.map((item) => (
                 <div key={item.id} className="flex gap-4 p-4 border rounded-lg">
                   <div className="relative h-24 w-24 rounded-md overflow-hidden">
-                    <img
-                      src={item.image}
+                    <Image
+                      src={item.image || "/placeholder.svg"}
                       alt={item.name}
+                      width={96}
+                      height={96}
                       className="object-cover w-full h-full"
                     />
                   </div>
@@ -187,7 +194,7 @@ function OrderDetailsDialog({
 const MotionDiv = motion.div
 const MotionCard = motion(Card)
 
-export default function ProfilePage() {
+const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("orders")
@@ -212,7 +219,13 @@ export default function ProfilePage() {
       isDefault: true,
     },
   ])
-  const [newPaymentMethod, setNewPaymentMethod] = useState({
+  const [newPaymentMethod, setNewPaymentMethod] = useState<{
+    type: "card" | "paypal" | "apple";
+    cardName: string;
+    cardNumber: string;
+    expiry: string;
+    cvc: string;
+  }>({
     type: "card",
     cardName: "",
     cardNumber: "",
@@ -392,6 +405,13 @@ export default function ProfilePage() {
     router.push(`/track-order?order=${orderId}`)
   }
 
+  const handleRemoveFromWishlist = (productId: string) => {
+    toast({
+      title: "Removed from wishlist",
+      description: "Item has been removed from your wishlist.",
+    })
+  }
+
   if (!user) {
     return (
       <div className="container mx-auto py-20 text-center">
@@ -422,7 +442,7 @@ export default function ProfilePage() {
               <div className="relative mx-auto group">
                 <Avatar className="h-20 w-20 mx-auto cursor-pointer" onClick={() => setShowPhotoDialog(true)}>
                   <AvatarImage src={profileImage || ""} alt={user.name} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xl font-medium">
+                  <AvatarFallback className="bg-primary text-black text-xl font-medium">
                     {getInitials()}
                   </AvatarFallback>
                 </Avatar>
@@ -533,11 +553,9 @@ export default function ProfilePage() {
                                   <CardTitle className="text-lg">Order #{order.id}</CardTitle>
                                   <CardDescription>Placed on {order.date}</CardDescription>
                                 </div>
-                                <Badge variant="outline" className={statusConfig[order.status].color}>
-                                  {statusConfig[order.status].icon && (
-                                    <statusConfig[order.status].icon className="h-3 w-3 mr-1" />
-                                  )}
-                                  {statusConfig[order.status].label}
+                                <Badge variant="outline" className={statusConfig[order.status || 'processing'].color}>
+                                  {React.createElement(statusConfig[order.status || 'processing'].icon, { className: "h-3 w-3 mr-1" })}
+                                  {statusConfig[order.status || 'processing'].label}
                                 </Badge>
                               </div>
                             </CardHeader>
@@ -547,9 +565,10 @@ export default function ProfilePage() {
                                   <div key={item.id} className="flex gap-4">
                                     <div className="w-16 h-16 relative rounded-md overflow-hidden flex-shrink-0">
                                       <Image
-                                        src={item.image}
+                                        src={item.image || "/placeholder.svg"}
                                         alt={item.name}
-                                        fill
+                                        width={96}
+                                        height={96}
                                         className="object-cover"
                                       />
                                     </div>
@@ -603,10 +622,12 @@ export default function ProfilePage() {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       {wishlist.map((product) => (
-                        <div
-                          key={product.id}
-                        >
-                          <ProductCard key={product.id} product={product} wishlistView />
+                        <div key={product.id}>
+                          <ProductCard 
+                            product={product} 
+                            wishlistView 
+                            onRemoveFromWishlist={handleRemoveFromWishlist} 
+                          />
                         </div>
                       ))}
                     </div>
@@ -632,10 +653,11 @@ export default function ProfilePage() {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                       {recentlyViewed.map((product) => (
-                        <div
-                          key={product.id}
-                        >
-                          <ProductCard key={product.id} product={product} />
+                        <div key={product.id}>
+                          <ProductCard 
+                            product={product} 
+                            onRemoveFromWishlist={handleRemoveFromWishlist} 
+                          />
                         </div>
                       ))}
                     </div>
@@ -964,13 +986,13 @@ export default function ProfilePage() {
       <Dialog open={showPhotoDialog} onOpenChange={setShowPhotoDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Profile Photo</DialogTitle>
+            <DialogTitle>Update Profile Photo</DialogTitle>
             <DialogDescription>Upload a new profile photo or remove your current one.</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center justify-center py-5 space-y-5">
             <Avatar className="h-24 w-24">
               <AvatarImage src={profileImage || ""} alt={user.name} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-medium">
+              <AvatarFallback className="bg-primary text-black text-2xl font-medium">
                 {getInitials()}
               </AvatarFallback>
             </Avatar>
@@ -1127,3 +1149,5 @@ export default function ProfilePage() {
     </div>
   )
 }
+
+export default ProfilePage

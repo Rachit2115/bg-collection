@@ -32,7 +32,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="keyboard-focus relative overflow-hidden hover-glow"
+      className="keyboard-focus relative overflow-hidden hover-glow bg-background/80 hover:bg-background/90"
       aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
     >
       <AnimatePresence mode="wait" initial={false}>
@@ -44,7 +44,11 @@ export function ThemeToggle() {
           transition={{ duration: 0.2 }}
           className="absolute inset-0 flex items-center justify-center"
         >
-          {theme === "dark" ? <Sun className="h-5 w-5 text-primary" /> : <Moon className="h-5 w-5 text-primary" />}
+          {theme === "dark" ? (
+            <Sun className="h-5 w-5 text-yellow-500" />
+          ) : (
+            <Moon className="h-5 w-5 text-indigo-500" />
+          )}
         </motion.div>
       </AnimatePresence>
       <span className="sr-only">{theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}</span>
@@ -55,7 +59,7 @@ export function ThemeToggle() {
         animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
         transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
       >
-        <Sparkles className="h-3 w-3 text-secondary" />
+        <Sparkles className="h-3 w-3 text-primary" />
       </motion.div>
     </Button>
   )

@@ -69,8 +69,8 @@ export default function HomePage() {
     const floatingElementsData = [...Array(5)].map((_, i) => ({
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 100}%`,
-      y: [Math.random() * 50, Math.random() * -50],
-      x: [Math.random() * 50, Math.random() * -50],
+      y: [Math.random() * 50, Math.random() * -50] as [number, number],
+      x: [Math.random() * 50, Math.random() * -50] as [number, number],
       duration: Math.random() * 10 + 10,
     }))
 
@@ -80,9 +80,9 @@ export default function HomePage() {
       height: Math.random() * 100 + 20,
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
-      y: [Math.random() * 100, Math.random() * -100],
-      x: [Math.random() * 100, Math.random() * -100],
-      opacity: [0.1, 0.3, 0.1],
+      y: [Math.random() * 100, Math.random() * -100] as [number, number],
+      x: [Math.random() * 100, Math.random() * -100] as [number, number],
+      opacity: [0.1, 0.3, 0.1] as [number, number, number],
       duration: Math.random() * 10 + 10,
     }))
 
@@ -228,13 +228,16 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product, index) => (
               <motion.div
-                key={product.id}
+                key={product!.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <ProductCard product={product} />
+                <ProductCard 
+                  product={product!} 
+                  onRemoveFromWishlist={() => {}} 
+                />
               </motion.div>
             ))}
           </div>

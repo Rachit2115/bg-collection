@@ -217,8 +217,10 @@ export function Header() {
                       aria-label="User menu"
                     >
                       <Avatar className="h-8 w-8 border-2 border-primary">
-                        <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user.name} />
-                        <AvatarFallback className="bg-primary/20">{user.name.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={user.profileImage || ""} alt={user.name} />
+                        <AvatarFallback className="bg-primary/20 text-primary font-medium">
+                          {user.firstName?.charAt(0) || user.name?.charAt(0) || "U"}
+                        </AvatarFallback>
                       </Avatar>
                     </Button>
                   </motion.div>
@@ -392,8 +394,10 @@ export function Header() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 px-3 py-2">
                     <Avatar className="h-8 w-8 border-2 border-primary">
-                      <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user.name} />
-                      <AvatarFallback className="bg-primary/20">{user.name.charAt(0)}</AvatarFallback>
+                      <AvatarImage src={user.profileImage || ""} alt={user.name} />
+                      <AvatarFallback className="bg-primary/20 text-primary font-medium">
+                        {user.firstName?.charAt(0) || user.name?.charAt(0) || "U"}
+                      </AvatarFallback>
                     </Avatar>
                     <div>
                       <p className="text-sm font-medium font-poppins">{user.name}</p>

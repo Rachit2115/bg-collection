@@ -150,7 +150,7 @@ export default function OrderDetailsPage() {
                         <div key={item.id} className="flex gap-4 p-4 border rounded-lg">
                           <div className="relative h-24 w-24 rounded-md overflow-hidden">
                             <img
-                              src={item.image}
+                              src={item.image || "/placeholder.svg"}
                               alt={item.name}
                               className="object-cover w-full h-full"
                             />

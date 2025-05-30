@@ -53,10 +53,10 @@ const initialOrders: Order[] = [
     items: [
       {
         id: "1",
-        name: "Elegant Photo Frame",
+        name: "Leather Journal",
         price: 1499,
         quantity: 1,
-        image: "/images/elegant-framme.jpg",
+        image: "/images/leather-journal.jpg",
       },
     ],
     total: 1499,
@@ -70,10 +70,10 @@ const initialOrders: Order[] = [
     items: [
       {
         id: "2",
-        name: "Minimalist Wall Clock",
+        name: "Brass Bowl",
         price: 2499,
         quantity: 1,
-        image: "/images/minimal-clock.jpg",
+        image: "/images/brass-bowl.jpg",
       },
     ],
     total: 2499,
@@ -87,10 +87,10 @@ const initialOrders: Order[] = [
     items: [
       {
         id: "3",
-        name: "Decorative Table Lamp",
+        name: "Minimal Clock",
         price: 3499,
         quantity: 1,
-        image: "/images/lamp.jpg",
+        image: "/images/minimal-clock.jpg",
       },
     ],
     total: 3499,
@@ -176,7 +176,7 @@ function OrderDetailsDialog({
                 <div key={`${order.id}-${item.id}`} className="flex gap-4 p-4 border rounded-lg">
                   <div className="relative h-24 w-24 rounded-md overflow-hidden bg-muted">
                     <Image
-                      src={item.image}
+                      src={item.image || "/placeholder.svg"}
                       alt={item.name}
                       fill
                       className="object-cover"
@@ -276,7 +276,7 @@ function OrderCard({ order }: { order: Order }) {
             <div key={`${order.id}-${item.id}`} className="flex gap-4">
               <div className="relative h-20 w-20 rounded-md overflow-hidden bg-muted">
                 <Image
-                  src={item.image}
+                  src={item.image || "/placeholder.svg"}
                   alt={item.name}
                   fill
                   className="object-cover"
@@ -377,6 +377,21 @@ export default function OrdersPage() {
       // Clear the lastOrder from localStorage
       localStorage.removeItem("lastOrder")
     }
+
+    // Set up an event listener for storage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "lastOrder" && e.newValue) {
+        const newOrder = JSON.parse(e.newValue)
+        setOrders((prevOrders) => {
+          const updatedOrders = [newOrder, ...prevOrders]
+          localStorage.setItem("orders", JSON.stringify(updatedOrders))
+          return updatedOrders
+        })
+      }
+    }
+
+    window.addEventListener("storage", handleStorageChange)
+    return () => window.removeEventListener("storage", handleStorageChange)
   }, [])
 
   return (

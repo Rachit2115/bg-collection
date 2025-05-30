@@ -12,6 +12,7 @@ type User = {
   lastName: string
   email: string
   phone?: string
+  profileImage?: string
 }
 
 type AuthContextType = {
