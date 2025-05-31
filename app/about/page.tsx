@@ -343,7 +343,7 @@ export default function AboutPage() {
             method="POST"
             className="space-y-6"
           >
-            <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_API_KEY" />
+            <input type="hidden" name="access_key" value="d438427d-894e-41ec-8ae2-18caa7a54c06" />
             {/* ...other fields... */}
             <Button type="submit" className="w-full">Send Message</Button>
           </form>

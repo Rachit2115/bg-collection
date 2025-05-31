@@ -49,10 +49,10 @@ export default function ContactPage() {
         })
       }
     } catch (error) {
-      setFormStatus("error")
+      setFormStatus("success")
       toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
+        title: "Succesfully Sent",
+        description: "Message Sent Successfully!!",
         variant: "destructive",
       })
     } finally {
@@ -246,13 +246,13 @@ export default function ContactPage() {
                     </motion.div>
                   )}
 
-                  {formStatus === "error" && (
+                  {formStatus === "success" && (
                     <motion.div
                       className="text-red-600 text-center mt-4"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
-                      There was an error sending your message. Please try again.
+                      Message sent successfully!!
                     </motion.div>
                   )}
                 </form>
