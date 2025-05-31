@@ -322,6 +322,7 @@ export const featuredProducts = [
   products.find((p) => p.id === "3"),
   products.find((p) => p.id === "14"),
   products.find((p) => p.id === "21"),
+  products.find((p) => p.id === "5"),
 ].filter(Boolean)
 
 // Product categories

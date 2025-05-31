@@ -14,7 +14,7 @@ export function Footer() {
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
 
@@ -66,7 +66,7 @@ export function Footer() {
 
       {/* Scroll to top button */}
       <div className="container mx-auto relative">
-        <motion.div className="absolute right-4 -top-6" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+        <motion.div className="absolute right-4 top-4" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Button
             onClick={scrollToTop}
             className="rounded-full h-12 w-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover-glow"
@@ -162,7 +162,7 @@ export function Footer() {
                 >
                   <Heart className="h-3 w-3 inline" fill="currentColor" />
                 </motion.span>{" "}
-                in India
+                by <b>Rachit Bhushan Sharma</b>
               </p>
               <p className="text-sm text-muted-foreground font-inter mt-2">
                 Contact:{" "}
@@ -196,20 +196,19 @@ export function Footer() {
           </div>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <img src="/placeholder.svg?height=24&width=38" alt="Visa" className="h-8" />
-            <img src="/placeholder.svg?height=24&width=38" alt="Mastercard" className="h-8" />
-            <img src="/placeholder.svg?height=24&width=38" alt="American Express" className="h-8" />
-            <img src="/placeholder.svg?height=24&width=38" alt="PayPal" className="h-8" />
-            <img src="/placeholder.svg?height=24&width=38" alt="UPI" className="h-8" />
+            {/* Removed payment method images */}
           </div>
         </div>
+      </div>
+      <div className="text-center text-xs text-muted-foreground py-4">
+        <b>This is a sample website made by <b>Rachit</b>.</b>
       </div>
     </footer>
   )
 }
 
 // Social media button with animation
-function SocialButton({ icon, label }) {
+function SocialButton({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
       <Button variant="ghost" size="icon" className="rounded-full hover-glow">
@@ -221,7 +220,7 @@ function SocialButton({ icon, label }) {
 }
 
 // Footer link with hover animation
-function FooterLink({ href, children }) {
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link href={href} className="text-muted-foreground hover:text-primary transition-colors relative group">
       <span>{children}</span>

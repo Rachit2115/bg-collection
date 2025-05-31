@@ -137,13 +137,23 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className={`text-sm font-medium transition-colors hover:text-foreground keyboard-focus ${
+                  className={`text-sm font-medium transition-colors hover:text-primary keyboard-focus relative group ${
                     isLinkActive("/products") ? "text-primary font-semibold" : "text-foreground/70"
                   } p-0 h-auto`}
                 >
                   <span className="flex items-center">
                     Shop <ChevronDown className="h-4 w-4 ml-1" />
                   </span>
+                  <motion.span
+                    className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary"
+                    animate={{ width: isLinkActive("/products") ? "100%" : "0%" }}
+                    transition={{ duration: 0.3 }}
+                  />
+                  <motion.span
+                    className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary opacity-0 group-hover:opacity-100"
+                    whileHover={{ width: "100%" }}
+                    transition={{ duration: 0.3 }}
+                  />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-48 bg-card/95 backdrop-blur-md relative overflow-hidden">

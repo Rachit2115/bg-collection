@@ -41,7 +41,7 @@ export default function AboutPage() {
           </div>
           <div className="relative h-[400px] rounded-lg overflow-hidden shadow-xl">
             <Image
-              src="/placeholder.svg?height=800&width=600"
+              src="/images/shop2.jpg"
               alt="BG Collection Workshop"
               fill
               className="object-cover"
@@ -153,28 +153,28 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
-                name: "Bhavya Gupta",
-                role: "Founder & Creative Director",
-                image: "/placeholder.svg?height=400&width=400",
-                bio: "With a background in textile design and a passion for traditional crafts, Bhavya founded BG Collection to bridge the gap between artisanal techniques and contemporary aesthetics.",
+                name: "Rachit Sharma",
+                role: "Web Developer & Student at VIT Bhopal",
+                image: "/images/members/rachit.jpg",
+                bio: "Rachit is a passionate web developer and a student at VIT Bhopal. He enjoys building modern, user-friendly web applications and is always eager to learn new technologies. Rachit believes in the power of technology to solve real-world problems and strives to create impactful digital experiences.",
               },
               {
                 name: "Arjun Mehta",
                 role: "Head of Design",
-                image: "/placeholder.svg?height=400&width=400",
+                image: "/images/members/arjun-mehta.jpg",
                 bio: "Arjun brings over 15 years of experience in product design, with a special focus on blending functionality with artistic expression.",
               },
               {
                 name: "Priya Sharma",
                 role: "Artisan Relations",
-                image: "/placeholder.svg?height=400&width=400",
+                image: "/images/members/priya-sharma.jpg",
                 bio: "Priya works directly with our network of artisans across India, ensuring fair practices and helping preserve traditional craft techniques.",
               },
               {
-                name: "Vikram Singh",
+                name: "Bruno Johnson",
                 role: "Operations Director",
-                image: "/placeholder.svg?height=400&width=400",
-                bio: "Vikram oversees our supply chain and operations, ensuring that each piece meets our quality standards before reaching your home.",
+                image: "/images/members/bruno-johnson.jpg",
+                bio: "Bruno oversees our supply chain and operations, ensuring that each piece meets our quality standards before reaching your home.",
               },
             ].map((member, index) => (
               <Card key={index} className="overflow-hidden">
@@ -319,11 +319,34 @@ export default function AboutPage() {
             design.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg">Shop Now</Button>
-            <Button size="lg" variant="outline">
-              Contact Us
+            <Button size="lg" asChild>
+              <a href="/products">Shop Now</a>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <a href="/contact">Contact Us</a>
             </Button>
           </div>
+        </div>
+
+        {/* Contact Form */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <Badge className="mb-4">Contact Us</Badge>
+            <h2 className="text-3xl font-bold mb-4">Get in Touch</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              We'd love to hear from you. Use the form below to send us a message.
+            </p>
+          </div>
+
+          <form
+            action="https://api.web3forms.com/submit"
+            method="POST"
+            className="space-y-6"
+          >
+            <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_API_KEY" />
+            {/* ...other fields... */}
+            <Button type="submit" className="w-full">Send Message</Button>
+          </form>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 
 export function ImageGallery({ images }) {
   const [currentImage, setCurrentImage] = useState(0)
@@ -97,6 +97,7 @@ export function ImageGallery({ images }) {
 
       <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
         <DialogContent className="max-w-3xl">
+          <DialogTitle className="sr-only">Product Image Gallery</DialogTitle>
           <div className="relative aspect-square">
             <Image
               src={images[currentImage] || "/placeholder.svg"}
