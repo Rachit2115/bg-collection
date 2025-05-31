@@ -106,7 +106,7 @@ export default function ProductsPage() {
     setFilteredProducts(result)
   }, [activeFilters, sortOption, searchQuery])
 
-  const handleFilterChange = (filterType, value) => {
+  const handleFilterChange = (filterType: string, value: string) => {
     setActiveFilters((prev) => ({
       ...prev,
       [filterType]: value,
@@ -146,7 +146,7 @@ export default function ProductsPage() {
     router.push(`/products${params.toString() ? `?${params.toString()}` : ""}`)
   }
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     // Update URL with search query
@@ -271,7 +271,11 @@ export default function ProductsPage() {
                 </form>
               </div>
 
-              <ProductFilters activeFilters={activeFilters} onFilterChange={handleFilterChange} />
+              <ProductFilters
+                activeFilters={activeFilters}
+                onFilterChange={handleFilterChange}
+                onClose={() => {}}
+              />
             </div>
           </div>
 
